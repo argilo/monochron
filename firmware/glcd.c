@@ -32,6 +32,7 @@
 // include fonts
 #include "font5x7.h"
 #include "fontgr.h"
+#include "bitmaps.h"
 
 #include "util.h"
 
@@ -283,6 +284,15 @@ void glcdFillCircle(u08 xcenter, u08 ycenter, u08 radius, u08 color)
       y--;
     }
     x++;
+  }
+}
+
+void glcdDrawBitmap(unsigned char *startOffset, u08 x, u08 yLine, u08 width, u08 height) {
+  for (u08 y = 0; y < height; y++) {
+    glcdSetAddress(x, yLine + y);
+    for (u08 x = 0; x < width; x++) {
+      glcdDataWrite(pgm_read_byte(startOffset++));
+    }
   }
 }
 

@@ -14,6 +14,7 @@
 #include "glcd.h"
 #include "font5x7.h"
 #include "fonttable.h"
+#include "bitmaps.h"
 
 
 extern volatile uint8_t time_s, time_m, time_h;
@@ -121,23 +122,29 @@ void drawdisplay(void) {
       drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/10, !inverted);
       
 
-    // draw hours
-    if (left >= 10) {
-      drawdigit(DISPLAY_H10_X, DISPLAY_TIME_Y, left/10, inverted);
-    } else {
-      drawdigit(DISPLAY_H10_X, DISPLAY_TIME_Y, 8, !inverted);
-    }
-    drawdigit(DISPLAY_H1_X, DISPLAY_TIME_Y, left%10, inverted);
+    // Draw time
+    glcdDrawBitmap(&DigitsLarge[(left/10) * 25 * 5], 3, 0, 25, 5);
+    glcdDrawBitmap(&DigitsLarge[(left%10) * 25 * 5], 31, 0, 25, 5);
     
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, right/10, inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, right%10, inverted);
+    glcdDrawBitmap(&DigitsLarge[(right/10) * 25 * 5], 72, 0, 25, 5);
+    glcdDrawBitmap(&DigitsLarge[(right%10) * 25 * 5], 100, 0, 25, 5);
+
+    // Draw date
+    glcdDrawBitmap(&Weekdays[dotw(date_m, date_d, date_y) * 47 * 3], 1, 5, 47, 3);
+
+    glcdDrawBitmap(&DigitsSmall[(date_d/10) * 14 * 3], 59, 5, 14, 3);
+    glcdDrawBitmap(&DigitsSmall[(date_d%10) * 14 * 3], 75, 5, 14, 3);
+    glcdFillRectangle(91, 56, 4, 2, ON);
+    glcdFillRectangle(92, 55, 2, 4, ON);
+    glcdDrawBitmap(&DigitsSmall[(date_m/10) * 14 * 3], 97, 5, 14, 3);
+    glcdDrawBitmap(&DigitsSmall[(date_m%10) * 14 * 3], 113, 5, 14, 3);
     
     if (second_changed && time_s%2) {
-      drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/3, 0);
-      drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*2/3, 0);
+      drawdot(GLCD_XPIXELS/2, 15, 0);
+      drawdot(GLCD_XPIXELS/2, 30, 0);
     } else {
-      drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/3, 1);
-      drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*2/3, 1);
+      drawdot(GLCD_XPIXELS/2, 15, 1);
+      drawdot(GLCD_XPIXELS/2, 30, 1);
     }
   }
 }
