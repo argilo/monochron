@@ -27,11 +27,6 @@ extern volatile uint8_t score_mode;
 
 extern volatile uint8_t second_changed, minute_changed, hour_changed;
 
-#ifdef OPTION_DOW_DATELONG
-const uint8_t DOWText[] PROGMEM = "sunmontuewedthufrisat";
-const uint8_t MonthText[] PROGMEM = "   janfebmaraprmayjunjulaugsepoctnovdec";
-#endif
-
 uint8_t redraw_time = 0;
 uint8_t last_score_mode = 0;
 
@@ -80,25 +75,6 @@ void drawdisplay(void) {
     drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, right/10, inverted);
     drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, right % 10, inverted);
   } 
-#ifdef OPTION_DOW_DATELONG
-  else if (score_mode == SCORE_MODE_DOW) {
-  	uint8_t dow = dotw(date_m, date_d, date_y);
-  	draw7seg(DISPLAY_H10_X, DISPLAY_TIME_Y, 0x00 , inverted);
-    drawdigit(DISPLAY_H1_X, DISPLAY_TIME_Y, pgm_read_byte(DOWText + (dow*3) + 0), inverted);
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, pgm_read_byte(DOWText + (dow*3) + 1), inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, pgm_read_byte(DOWText + (dow*3) + 2), inverted);
-  } else if (score_mode == SCORE_MODE_DATELONG_MON) {
-  	draw7seg(DISPLAY_H10_X, DISPLAY_TIME_Y, 0x00 , inverted);
-    drawdigit(DISPLAY_H1_X, DISPLAY_TIME_Y, pgm_read_byte(MonthText + (date_m*3) + 0), inverted);
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, pgm_read_byte(MonthText + (date_m*3) + 1), inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, pgm_read_byte(MonthText + (date_m*3) + 2), inverted);
-  } else if (score_mode == SCORE_MODE_DATELONG_DAY) {
-  	draw7seg(DISPLAY_H10_X, DISPLAY_TIME_Y, 0x00 , inverted);
-    draw7seg(DISPLAY_H1_X, DISPLAY_TIME_Y, 0x00 , inverted);
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, date_d/10, inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, date_d % 10, inverted);
-  } 
-#endif
   else if ((score_mode == SCORE_MODE_TIME) || (score_mode == SCORE_MODE_ALARM)) {
     // draw time or alarm
     uint8_t left, right;
