@@ -1,3 +1,10 @@
+/*
+ * This code is distributed under the GNU Public License
+ * which can be found at http://www.gnu.org/licenses/gpl.txt
+ *
+ * Copyright Clayton Smith 2011
+ */
+
 #ifndef BITMAPS_H
 #define BITMAPS_H
 
