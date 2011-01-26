@@ -76,12 +76,8 @@
 // alarm (for a few sec when alarm switch is flipped)
 // date/year (for a few sec when + is pressed)
 #define SCORE_MODE_TIME 0
-#define SCORE_MODE_DATE 1
 #define SCORE_MODE_YEAR 2
 #define SCORE_MODE_ALARM 3
-#define SCORE_MODE_DOW 4
-#define SCORE_MODE_DATELONG_MON 5
-#define SCORE_MODE_DATELONG_DAY 6
 
 // Constants for how to display time & date
 #define REGION_US 0
@@ -181,9 +177,4 @@ void writei2ctime(uint8_t sec, uint8_t min, uint8_t hr, uint8_t day,
 
 void print_date(uint8_t month, uint8_t day, uint8_t year, uint8_t mode);
 
-void draw7seg(uint8_t x, uint8_t y, uint8_t segs, uint8_t inverted);
-void drawsegment(uint8_t s, uint8_t x, uint8_t y, uint8_t inverted);
-void drawdigit(uint8_t d, uint8_t x, uint8_t y, uint8_t inverted);
-void drawvseg(uint8_t x, uint8_t y, uint8_t inverted);
-void drawhseg(uint8_t x, uint8_t y, uint8_t inverted);
 void drawdot(uint8_t x, uint8_t y, uint8_t inverted);

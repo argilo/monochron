@@ -49,38 +49,14 @@ void initdisplay(uint8_t inverted) {
 void drawdisplay(void) {
   uint8_t inverted = 0;
 
-  if ((score_mode != SCORE_MODE_TIME) && (score_mode != SCORE_MODE_ALARM))
-  {
-  	drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/3, !inverted);
-    drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*2/3, !inverted);
-    drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/10, !inverted);
-  }
-
-  if (score_mode == SCORE_MODE_YEAR) {
-    drawdigit(DISPLAY_H10_X, DISPLAY_TIME_Y, 2 , inverted);
-    drawdigit(DISPLAY_H1_X, DISPLAY_TIME_Y, 0, inverted);
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, (date_y % 100)/10, inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, date_y % 10, inverted);
-  } else if (score_mode == SCORE_MODE_DATE) {
-    uint8_t left, right;
-    if (region == REGION_US) {
-      left = date_m;
-      right = date_d;
-    } else {
-      left = date_d;
-      right = date_m;
-    }
-    drawdigit(DISPLAY_H10_X, DISPLAY_TIME_Y, left/10 , inverted);
-    drawdigit(DISPLAY_H1_X, DISPLAY_TIME_Y, left%10, inverted);
-    drawdigit(DISPLAY_M10_X, DISPLAY_TIME_Y, right/10, inverted);
-    drawdigit(DISPLAY_M1_X, DISPLAY_TIME_Y, right % 10, inverted);
-  } 
-  else if ((score_mode == SCORE_MODE_TIME) || (score_mode == SCORE_MODE_ALARM)) {
     // draw time or alarm
     uint8_t left, right;
     if (score_mode == SCORE_MODE_ALARM) {
       left = alarm_h;
       right = alarm_m;
+    } else if (score_mode == SCORE_MODE_YEAR) {
+      left = 20;
+      right = date_y % 100;
     } else {
       left = time_h;
       right = time_m;
@@ -108,21 +84,27 @@ void drawdisplay(void) {
     // Draw date
     glcdDrawBitmap(&Weekdays[dotw(date_m, date_d, date_y) * 47 * 3], 1, 5, 47, 3);
 
-    glcdDrawBitmap(&DigitsSmall[(date_d/10) * 14 * 3], 59, 5, 14, 3);
-    glcdDrawBitmap(&DigitsSmall[(date_d%10) * 14 * 3], 75, 5, 14, 3);
+    if (region == REGION_US) {
+      left = date_m;
+      right = date_d;
+    } else {
+      left = date_d;
+      right = date_m;
+    }
+    glcdDrawBitmap(&DigitsSmall[(left/10) * 14 * 3], 59, 5, 14, 3);
+    glcdDrawBitmap(&DigitsSmall[(left%10) * 14 * 3], 75, 5, 14, 3);
     glcdFillRectangle(91, 56, 4, 2, ON);
     glcdFillRectangle(92, 55, 2, 4, ON);
-    glcdDrawBitmap(&DigitsSmall[(date_m/10) * 14 * 3], 97, 5, 14, 3);
-    glcdDrawBitmap(&DigitsSmall[(date_m%10) * 14 * 3], 113, 5, 14, 3);
+    glcdDrawBitmap(&DigitsSmall[(right/10) * 14 * 3], 97, 5, 14, 3);
+    glcdDrawBitmap(&DigitsSmall[(right%10) * 14 * 3], 113, 5, 14, 3);
     
-    if (second_changed && time_s%2) {
+    if (second_changed && time_s%2 && (score_mode != SCORE_MODE_YEAR)) {
       drawdot(GLCD_XPIXELS/2, 15, 0);
       drawdot(GLCD_XPIXELS/2, 30, 0);
     } else {
       drawdot(GLCD_XPIXELS/2, 15, 1);
       drawdot(GLCD_XPIXELS/2, 30, 1);
     }
-  }
 }
 
 
@@ -131,70 +113,6 @@ void step(void) {
 
 void drawdot(uint8_t x, uint8_t y, uint8_t inverted) {
   glcdFillCircle(x, y, DOTRADIUS, !inverted);
-}
-
-void draw7seg(uint8_t x, uint8_t y, uint8_t segs, uint8_t inverted)
-{
-	for(uint8_t i=0;i<7;i++)
-	{
-		if(segs & (1 << (7 - i)))
-			drawsegment('a'+i, x, y, inverted);
-		else
-			drawsegment('a'+i, x, y, !inverted);
-	}
-}
-
-void drawdigit(uint8_t x, uint8_t y, uint8_t d, uint8_t inverted) {
-  if(d < 10)
-  	  draw7seg(x,y,pgm_read_byte(numbertable_p + d),inverted);
-  else if ((d >= 'a') || (d <= 'z'))
-  	  draw7seg(x,y,pgm_read_byte(alphatable_p + (d - 'a')),inverted);
-  else
-  	  draw7seg(x,y,0x00,inverted);
-}
-void drawsegment(uint8_t s, uint8_t x, uint8_t y, uint8_t inverted) {
-  switch (s) {
-  case 'a':
-    drawhseg(x+VSEGMENT_W/2+1, y, inverted);
-    break;
-  case 'b':
-    drawvseg(x+HSEGMENT_W+2, y+HSEGMENT_H/2+2, inverted);
-    break;
-  case 'c':
-    drawvseg(x+HSEGMENT_W+2, y+GLCD_YPIXELS/2+2, inverted);
-    break;
-  case 'd':
-    drawhseg(x+VSEGMENT_W/2+1, GLCD_YPIXELS-HSEGMENT_H, inverted);
-    break;
-  case 'e':
-    drawvseg(x, y+GLCD_YPIXELS/2+2, inverted);
-    break;
-  case 'f':
-    drawvseg(x,y+HSEGMENT_H/2+2, inverted);
-    break;
-  case 'g':
-    drawhseg(x+VSEGMENT_W/2+1, (GLCD_YPIXELS - HSEGMENT_H)/2, inverted);
-    break;    
-  }
-}
-void drawvseg(uint8_t x, uint8_t y, uint8_t inverted) {
-  glcdFillRectangle(x, y+2, VSEGMENT_W, VSEGMENT_H-4, ! inverted);
-
-  glcdFillRectangle(x+1, y+1, VSEGMENT_W-2, 1, ! inverted);
-  glcdFillRectangle(x+2, y, VSEGMENT_W-4, 1, ! inverted);
-
-  glcdFillRectangle(x+1, y+VSEGMENT_H-2, VSEGMENT_W-2, 1, ! inverted);
-  glcdFillRectangle(x+2, y+VSEGMENT_H-1, VSEGMENT_W-4, 1, ! inverted);
-}
-
-void drawhseg(uint8_t x, uint8_t y, uint8_t inverted) {
-  glcdFillRectangle(x+2, y, HSEGMENT_W-4, HSEGMENT_H, ! inverted);
-
-  glcdFillRectangle(x+1, y+1, 1, HSEGMENT_H - 2, ! inverted);
-  glcdFillRectangle(x, y+2, 1, HSEGMENT_H - 4, ! inverted);
-
-  glcdFillRectangle(x+HSEGMENT_W-2, y+1, 1, HSEGMENT_H - 2, ! inverted);
-  glcdFillRectangle(x+HSEGMENT_W-1, y+2, 1, HSEGMENT_H - 4, ! inverted);
 }
 
 uint8_t dotw(uint8_t mon, uint8_t day, uint8_t yr)

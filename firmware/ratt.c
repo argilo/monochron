@@ -86,7 +86,6 @@ void init_eeprom(void) {	//Set eeprom to a default state.
 int main(void) {
   uint8_t inverted = 0;
   uint8_t mcustate;
-  uint8_t display_date = 0;
 
   // check if we were reset
   mcustate = MCUSR;
@@ -159,61 +158,19 @@ int main(void) {
 	  setsnooze();
 	}
 
-	if(display_date==3 && !score_mode_timeout)
-	{
-		display_date=0;
-		score_mode = SCORE_MODE_YEAR;
-	    score_mode_timeout = 3;
-	    //drawdisplay();
-	}
-	
-	/*if(display_date && !score_mode_timeout)
-	{
-	  if(last_score_mode == SCORE_MODE_DATELONG)
-	  {
-	    score_mode = SCORE_MODE_DOW;
-	    score_mode_timeout = 3;
-	    setscore();
-	  }
-	  
-	  else if(last_score_mode == SCORE_MODE_DOW)
-	  {
-	    score_mode = SCORE_MODE_DATE;
-	    score_mode_timeout = 3;
-	    setscore();
-	  }
-	  else if(last_score_mode == SCORE_MODE_DATE)
-	  {
-	    score_mode = SCORE_MODE_YEAR;
-	    score_mode_timeout = 3;
-	    setscore();
-	    display_date = 0;
-	  }
-	  
-	}*/
-	/*if(display_date && !score_mode_timeout)
-	{
-	  score_mode = SCORE_MODE_YEAR;
-	  score_mode_timeout = 3;
-	  setscore();
-	  display_date = 0;
-	}*/
-
     //Was formally set for just the + button.  However, because the Set button was never
     //accounted for, If the alarm was turned on, and ONLY the set button was pushed since then,
     //the alarm would not sound at alarm time, but go into a snooze immediately after going off.
     //This could potentially make you late for work, and had to be fixed.
 	if (just_pressed & 0x6) {
 	  just_pressed = 0;
-	  	display_date = 3;
-	  	score_mode = SCORE_MODE_DATE;
+	  	score_mode = SCORE_MODE_YEAR;
 	  score_mode_timeout = 3;
 	  //drawdisplay();
 	}
 
     if (just_pressed & 0x1) {
       just_pressed = 0;
-      display_date = 0;
       score_mode = SCORE_MODE_TIME;
       score_mode_timeout = 0;
       //drawdisplay();
