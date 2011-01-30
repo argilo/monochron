@@ -381,6 +381,8 @@ void writei2ctime(uint8_t sec, uint8_t min, uint8_t hr, uint8_t day,
 
 // runs at about 30 hz
 uint8_t t2divider1 = 0, t2divider2 = 0;
+uint8_t justSetBack = 0; // Flag to make sure we don't get stuck in a loop
+                         // after setting back the clock.
 SIGNAL (TIMER2_OVF_vect) {
   wdt_reset();
 #ifdef BACKLIGHT_ADJUST
@@ -406,6 +408,34 @@ SIGNAL (TIMER2_OVF_vect) {
     hour_changed = 1; 
     old_h = last_h;
     old_m = last_m;
+
+    // Correct for clock drift once a week.
+    if ((time_h == 4) && (dotw(date_m, date_d, date_y) == 0)) {
+      if (justSetBack == 0) {
+        // Set the clock back 22 seconds.
+        writei2ctime(38, 59, 3, 0, date_d, date_m, date_y);
+        justSetBack = 1;
+      } else {
+        justSetBack = 0;
+      }
+    }
+
+    // Spring ahead (at 2am on the second Sunday of March)
+    if ((time_h == 2) && (date_m == 3) && (date_d >= 8) && (date_d <= 14)
+        && (dotw(date_m, date_d, date_y) == 0)) {
+      writei2ctime(time_s, time_m, time_h + 1, 0, date_d, date_m, date_y);
+    }
+
+    // Fall back (at 2am on the first Sunday of November)
+    if ((time_h == 2) && (date_m == 11) && (date_d <= 7)
+        && (dotw(date_m, date_d, date_y) == 0)) {
+      if (justSetBack == 0) {
+        writei2ctime(time_s, time_m, time_h - 1, 0, date_d, date_m, date_y);
+        justSetBack = 1;
+      } else {
+        justSetBack = 0;
+      }
+    }
   } else if (time_m != last_m) {
     minute_changed = 1;
     old_m = last_m;
