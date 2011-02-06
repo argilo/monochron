@@ -439,13 +439,13 @@ SIGNAL (TIMER2_OVF_vect) {
           justSetBack = 0;
         }
       }
-    } else if (time_m != last_m) {
-      minute_changed = 1;
-      old_m = last_m;
-    } else if (time_s != last_s) {
-      second_changed = 1;
-      old_s = last_s;
     }
+  } else if (time_m != last_m) {
+    minute_changed = 1;
+    old_m = last_m;
+  } else if (time_s != last_s) {
+    second_changed = 1;
+    old_s = last_s;
   }
 
 
