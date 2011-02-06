@@ -61,18 +61,10 @@ void drawdisplay(void) {
       left = time_h;
       right = time_m;
     }
-    uint8_t am = (left < 12);
-    if (time_format == TIME_12H) {
+
+    if ((time_format == TIME_12H) && (score_mode != SCORE_MODE_YEAR)) {
       left = (left + 23)%12 + 1;
-      if(am) {
-      	drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/10, inverted);
-      } else {
-      	drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/10, !inverted);
-      }
     }
-    else
-      drawdot(GLCD_XPIXELS/2, GLCD_YPIXELS*1/10, !inverted);
-      
 
     // Draw time
     glcdDrawBitmap(&DigitsLarge[(left/10) * 25 * 5], 3, 0, 25, 5);
