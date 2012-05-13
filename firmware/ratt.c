@@ -106,7 +106,7 @@ int main(void) {
 
   DEBUGP("clock!");
   clock_init();
-  //beep(4000, 100);
+  //beep(4000);
 
   init_eeprom();
   region = eeprom_read_byte((uint8_t *)EE_REGION);
@@ -135,7 +135,7 @@ int main(void) {
 #endif
 
   DDRB |= _BV(5);
-  beep(4000, 100);
+  beep(4000);
   
   //glcdInit locks and disables interrupts in one of its functions.  If the LCD is not
   //plugged in, glcd will run forever.  For good reason, it would be desirable to know
@@ -238,13 +238,13 @@ SIGNAL(TIMER1_COMPA_vect) {
   PIEZO_PORT ^= _BV(PIEZO);
 }
 
-void beep(uint16_t freq, uint8_t duration) {
+void beep(uint16_t freq) {
   // use timer 1 for the piezo/buzzer 
   TCCR1A = 0; 
   TCCR1B =  _BV(WGM12) | _BV(CS10); // CTC with fastest timer
   TIMSK1 = _BV(TOIE1) | _BV(OCIE1A);
   OCR1A = (F_CPU / freq) / 2;
-  _delay_ms(duration);
+  _delay_ms(100);
   TCCR1B = 0;
   // turn off piezo
   PIEZO_PORT &= ~_BV(PIEZO);
@@ -312,9 +312,9 @@ uint8_t readi2ctime(void) {
     DEBUG(putstring("Reading i2c data: ")); DEBUG(uart_putw_dec(r)); DEBUG(putstring_nl(""));
     while(1) {
       sei();
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(100);
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(1000);
     }
   }
@@ -325,9 +325,9 @@ uint8_t readi2ctime(void) {
   if (r != 0) {
     DEBUG(putstring("Reading i2c data: ")); DEBUG(uart_putw_dec(r)); DEBUG(putstring_nl(""));
     while(1) {
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(100);
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(1000);
     }
   }
@@ -370,9 +370,9 @@ void writei2ctime(uint8_t sec, uint8_t min, uint8_t hr, uint8_t day,
 
   if (r != 0) {
     while(1) {
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(100);
-      beep(4000, 100);
+      beep(4000);
       _delay_ms(1000);
     }
   }
