@@ -415,8 +415,8 @@ SIGNAL (TIMER2_OVF_vect) {
       // Correct for clock drift once a week.
       if ((time_h == 4) && (dotw(date_m, date_d, date_y) == 0)) {
         if (justSetBack == 0) {
-          // Set the clock back 22 seconds.
-          writei2ctime(38, 59, 3, 0, date_d, date_m, date_y);
+          // Set the clock back 14 seconds.
+          writei2ctime(46, 59, 3, 0, date_d, date_m, date_y);
           justSetBack = 1;
         } else {
           justSetBack = 0;
